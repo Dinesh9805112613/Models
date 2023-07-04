@@ -1,0 +1,71 @@
+#Importing all the libraries
+import pandas as pd
+from sklearn.linear_model import LinearRegression
+from sklearn.linear_model import Lasso
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.model_selection import train_test_split
+from sklearn import metrics
+
+#Collecting and processing the data
+car=pd.read_csv(r"C:\Users\dines\OneDrive\Documents\CSV Files\car data.csv")
+""""print(car.head(5))
+print(car.shape)
+print(car.info())
+print(car.isnull().sum())
+
+#Checking the distribution of categorical data
+
+print(car["Fuel_Type"].value_counts())
+print(car["Seller_Type"].value_counts())
+print(car["Transmission"].value_counts())"""
+
+#encoding the data- As ML model will not take the categorical values as input, we should encode them to numerical values
+map1={"Petrol":0,
+      "Diesel":1,
+      "CNG":2}
+map2={"Dealer":0,
+      "Individual":1}
+map3={"Manual":0,
+      "Automatic":1}
+
+car["Fuel_Type"]=car["Fuel_Type"].replace(map1)
+car["Seller_Type"]=car["Seller_Type"].replace(map2)
+car["Transmission"]=car["Transmission"].replace(map3)
+
+#Splitting the test and train data
+X=car.drop(["Car_Name","Selling_Price"],axis=1).values
+y=car["Selling_Price"].values
+
+X_train,X_test,y_train,y_test=train_test_split(X,y,test_size=0.1,random_state=2023)
+linreg=LinearRegression()
+linreg.fit(X_train,y_train)
+
+#Model evaluation
+training_data_pred=linreg.predict(X_train)
+
+train_error_score=metrics.r2_score(y_train,training_data_pred)
+print("R-Sqauared for Training data is:",train_error_score)
+
+
+#Model Evaluation with Test data
+test_data_pred=linreg.predict(X_test)
+test_error_score=metrics.r2_score(y_test,test_data_pred)
+print("R-Squared for Test data is:",test_error_score)
+
+#Visualizing actual vs. predictes prices
+"""plt.scatter(y_train,training_data_pred)
+plt.xlabel("Actual price")
+plt.ylabel("Predicted prices")
+plt.title("Price comparison - Training data")
+plt.show()"""
+
+#Visualizing actual vs. predictes prices
+plt.scatter(y_test,test_data_pred)
+plt.xlabel("Actual price")
+plt.ylabel("Predicted prices")
+plt.title("Price comparison - Test data")
+plt.show()
+
+#Lasso Regression

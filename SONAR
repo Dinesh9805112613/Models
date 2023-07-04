@@ -1,0 +1,65 @@
+#Importing all tthe libraries
+import pandas as pd 
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score
+
+#Collecting and Processing the data
+"""header: this allows you to specify which row will be used as column names for your dataframe. 
+Expected an int value or a list of int values
+Default value is header=0, which means the first row of the CSV file will be treated as column names."""
+
+sonar=pd.read_csv(r"C:\Users\dines\OneDrive\Documents\CSV Files\sonar.csv",header=None)
+#To give column names, use sonar.columns=[""]
+"""print(sonar.head(10))
+print(sonar.shape)
+print(sonar.describe())
+print(sonar[60].value_counts())
+
+#Grouping the data
+sonar_dt=sonar.groupby(60).mean()
+print(sonar_dt)"""
+
+#seperating feautures and labels
+X=sonar.drop(columns=60,axis=1).values
+y=sonar[60].values
+
+#Splitting Train and test data
+X_train,X_test,y_train,y_test=train_test_split(X,y,test_size=0.2,random_state=2021,shuffle=True,stratify=y)
+
+#Training the model
+logreg= LogisticRegression()
+logreg.fit(X_train,y_train)
+
+#Model evaluation
+#Accuracy score of train data
+X_train_pred=logreg.predict(X_train)
+training_data_accuracy = accuracy_score(X_train_pred,y_train)
+print("The training data accuracy is {:.3f}".format(training_data_accuracy))
+
+#Accuracy score of test data
+X_test_pred=logreg.predict(X_test)
+test_data_accuracy= accuracy_score(X_test_pred,y_test)
+print("The test data accuracy is {:.3f}".format(test_data_accuracy))
+
+#Make a predictive system
+input_data=(0.0100,0.0171,0.0623,0.0205,0.0205,0.0368,0.1098,0.1276,0.0598,0.1264,0.0881,0.1992,0.0184,0.2261,0.1729,0.2131,0.0693,0.2281,0.4060,0.3973,0.2741,0.3690,0.5556,0.4846,0.3140,0.5334,0.5256,0.2520,0.2090,0.3559,0.6260,0.7340,0.6120,0.3497,0.3953,0.3012,0.5408,0.8814,0.9857,0.9167,0.6121,0.5006,0.3210,0.3202,0.4295,0.3654,0.2655,0.1576,0.0681,0.0294,0.0241,0.0121,0.0036,0.0150,0.0085,0.0073,0.0050,0.0044,0.0040,0.0117)
+
+#Changing the input array into numpy array
+input_as_np=np.asarray(input_data)
+print(input_as_np.shape)
+#Reshaping represents that there are one instance and we have to predict the feature for the one instance
+input_reshape=input_as_np.reshape(1,-1)
+
+print(input_reshape.shape)
+#Making predictions
+new_pred=logreg.predict(input_reshape)
+
+#print(new_pred)
+
+#if condition
+if new_pred=="R":
+    print("This is Rock")
+else:
+    print("This is an explosive")
